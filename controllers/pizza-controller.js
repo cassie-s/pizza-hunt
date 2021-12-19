@@ -17,26 +17,20 @@ const pizzaController = {
       });
   },
 
-// get one pizza by id
-getPizzaById({ params }, res) {
-  Pizza.findOne({ _id: params.id })
-    .populate({
-      path: 'comments',
-      select: '-__v'
-    })
-    .select('-__v')
-    .then(dbPizzaData => {
-      if (!dbPizzaData) {
-        res.status(404).json({ message: 'No pizza found with this id!' });
-        return;
-      }
-      res.json(dbPizzaData);
-    })
-    .catch(err => {
-      console.log(err);
-      res.status(400).json(err);
-    });
-},
+  // get one pizza by id
+  getPizzaById({ params }, res) {
+    Pizza.findOne({ _id: params.id })
+      .populate({
+        path: 'comments',
+        select: '-__v'
+      })
+      .select('-__v')
+      .then(dbPizzaData => res.json(dbPizzaData))
+      .catch(err => {
+        console.log(err);
+        res.sendStatus(400);
+      });
+  },
 
   // createPizza
   createPizza({ body }, res) {
@@ -45,22 +39,9 @@ getPizzaById({ params }, res) {
       .catch(err => res.json(err));
   },
 
-// update pizza by id
-updatePizza({ params, body }, res) {
-  Pizza.findOneAndUpdate({ _id: params.id }, body, { new: true, runValidators: true })
-    .then(dbPizzaData => {
-      if (!dbPizzaData) {
-        res.status(404).json({ message: 'No pizza found with this id!' });
-        return;
-      }
-      res.json(dbPizzaData);
-    })
-    .catch(err => res.status(400).json(err));
-},
-
-  // delete pizza
-  deletePizza({ params }, res) {
-    Pizza.findOneAndDelete({ _id: params.id })
+  // update pizza by id
+  updatePizza({ params, body }, res) {
+    Pizza.findOneAndUpdate({ _id: params.id }, body, { new: true, runValidators: true })
       .then(dbPizzaData => {
         if (!dbPizzaData) {
           res.status(404).json({ message: 'No pizza found with this id!' });
@@ -68,7 +49,14 @@ updatePizza({ params, body }, res) {
         }
         res.json(dbPizzaData);
       })
-      .catch(err => res.status(400).json(err));
+      .catch(err => res.json(err));
+  },
+
+  // delete pizza
+  deletePizza({ params }, res) {
+    Pizza.findOneAndDelete({ _id: params.id })
+      .then(dbPizzaData => res.json(dbPizzaData))
+      .catch(err => res.json(err));
   }
 };
 
